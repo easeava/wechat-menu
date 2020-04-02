@@ -8,8 +8,7 @@
 </template>
 
 <script>
-import { WechatMenu } from '../lib/wechat-menu.umd'
-import '../lib/wechat-menu.css'
+import WechatMenu from '@/components/menu'
 
 export default {
   name: 'App',
