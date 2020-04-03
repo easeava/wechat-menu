@@ -71,6 +71,8 @@
     word-wrap: normal;
     color: #616161;
     text-decoration: none;
+    overflow: hidden;
+    flex: 1;
 
     &:hover {
       color: #353535;
@@ -100,11 +102,18 @@
     > li {
       position: relative;
       border-left: 1px solid #e7e7e7;
+      display: flex;
+      flex: 1;
+      width: 0;
 
       &:global(.current) {
         > a {
           line-height: 48px;
         }
+      }
+
+      a {
+        padding-left: 5px;
       }
     }
 
@@ -116,7 +125,6 @@
     li {
       line-height: 50px;
       text-align: center;
-      flex: 1;
     }
   }
 
@@ -150,6 +158,7 @@
       border-width: 5px;
       margin-left: -5px;
     }
+
     &::before {
       border-color: rgba(194, 225, 245, 0);
       border-top-color: #d0d0d0;

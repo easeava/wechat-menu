@@ -50,11 +50,20 @@ const Menu = {
       this.mainActive = index
       this.mainSubActive = index
 
-      this.handleTargetObject(this.value[index], index)
+      const select = Object.assign({
+        level: 1,
+        parent: 0,
+        index
+      }, this.value[index])
+
+      this.handleTargetObject(select)
     },
     // 当前选中对象
     handleTargetObject (item) {
-      this.tmp = item
+      this.tmp = Object.assign({}, item)
+      delete item.parent
+      delete item.index
+      delete item.level
       this.form = Object.assign({}, item)
     },
     // 删除当前菜单
@@ -68,16 +77,24 @@ const Menu = {
         onOk: () => {
           const { tmp, value } = this
 
-          if (tmp.level === 2) {
-            value[tmp.parent].sub_button.splice(tmp.index, 1)
-          } else {
-            value.splice(tmp.index, 1)
-          }
+          tmp.level === 2
+            ? value[tmp.parent].sub_button.splice(tmp.index, 1)
+            : value.splice(tmp.index, 1)
 
           this.tmp = {}
           this.form = {}
         }
       })
+    },
+
+    handleSubmit () {
+      const { tmp, value, form } = this
+      // 拷贝
+      const _form = Object.assign({}, form)
+
+      tmp.level === 2
+        ? this.$set(value[tmp.parent].sub_button, tmp.index, _form)
+        : this.$set(value, tmp.index, _form)
     }
   },
 
@@ -135,7 +152,7 @@ const Menu = {
 
     const renderFooter = () => {
       return <div class={style.mainFooter}>
-        <a-button type="primary" ghost class={style.submitForm}>保存并发布</a-button>
+        <a-button type="primary" ghost class={style.submitForm} onClick={this.handleSubmit}>保存</a-button>
       </div>
     }
 

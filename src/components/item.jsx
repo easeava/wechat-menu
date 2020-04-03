@@ -15,8 +15,8 @@ export default {
             {title}
           </span>
         }
-        {$slots.default}
       </a>
+      {$slots.default}
     </li>
   }
 }
