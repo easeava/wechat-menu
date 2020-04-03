@@ -1,5 +1,5 @@
-/* eslint-disable no-prototype-builtins */
 import Item from './item'
+import { Modal } from 'ant-design-vue'
 
 export default {
   props: {
@@ -24,7 +24,7 @@ export default {
 
   computed: {
     subCount () {
-      return this.data.hasOwnProperty('sub_button') ? this.data.sub_button.length : 0
+      return Object.prototype.hasOwnProperty.call(this.data, 'sub_button') ? this.data.sub_button.length : 0
     },
 
     current () {
@@ -36,12 +36,42 @@ export default {
 
   methods: {
     // 添加子菜单并默认选中
-    handleAddSubMenu (e) {
+    async handleAddSubMenu (e) {
       e.preventDefault()
       e.stopPropagation()
 
       const defaultSub = {
         name: '子菜单名称'
+      }
+
+      const confirm = () => {
+        return new Promise((resolve, reject) => {
+          Modal.confirm({
+            title: '温馨提示',
+            content: '删除后“菜单名称”菜单下设置的内容将被删除',
+            okText: '确定',
+            cancelText: '取消',
+            okCancel: true,
+            onOk: () => {
+              this.$set(this.$parent.value, this.index, {
+                name: this.data.name,
+                sub_button: []
+              })
+              resolve(true)
+            },
+            onCancel: () => {
+              reject(new Error())
+            }
+          })
+        })
+      }
+
+      if (Object.keys(this.data).length > 2) {
+        try {
+          await confirm()
+        } catch (error) {
+          return false
+        }
       }
 
       this.data.sub_button.push(defaultSub)
@@ -105,7 +135,7 @@ export default {
       </template>
       { $parent.mainSubActive === index && <div class="sub-menu">
         <ul>
-          { data.hasOwnProperty('sub_button') && data.sub_button.map((item, index) => <Item class={subIndex === index ? 'current' : ''} nativeOnClick={e => this.handleSelectSub(e, index)}>
+          { Object.prototype.hasOwnProperty.call(data, 'sub_button') && data.sub_button.map((item, index) => <Item class={subIndex === index ? 'current' : ''} nativeOnClick={e => this.handleSelectSub(e, index)}>
             <span slot="title" class='menu_inner'>
               <span> { item.name } </span>
             </span>

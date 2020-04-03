@@ -225,12 +225,18 @@
   }
 
   :global(.ant-form-item-control-wrapper) {
-    width: 300px;
+    width: 350px;
   }
 }
 
 .formModel {
   margin: 30px 0 10px;
+}
+
+.formBody {
+  > :global(.ant-form-explain) {
+    padding-top: 10px;
+  }
 }
 
 .formBox {

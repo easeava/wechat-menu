@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import MainItem from './main-item'
-import { FormModel, Input, Modal, Button } from 'ant-design-vue'
+import { FormModel, Input, Modal, Button, Radio } from 'ant-design-vue'
 import style from './style.module.scss'
 
 Vue.use(FormModel)
 Vue.use(Input)
 Vue.use(Button)
+Vue.use(Radio)
 
 export const MenuProps = {
   value: {
@@ -22,17 +23,39 @@ const Menu = {
   computed: {
     valueCount () {
       return this.value.length
+    },
+
+    hasSub () {
+      return Object.prototype.hasOwnProperty.call(this.tmp, 'sub_button') && this.tmp.sub_button.length > 0
     }
   },
 
   data () {
+    // const checkNameLength = (rule, value, callback) => {
+    //   console.log(this.form.name)
+    //   if (!value) {
+    //     return callback(new Error('请输入菜单名'))
+    //   }
+
+    //   if (value.replace(/[\u0391-\uFFE5]/g, 'aa').length > 8) {
+    //     callback(new Error('字数超过上限'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       mainCount: 3, // 主菜单限制
       subCount: 5, // 子菜单限制
       mainActive: null, // 主菜单选中
       mainSubActive: null, // 子菜单显示状态
       tmp: {}, // 临时选中对象
-      form: {} // 临时选中对象浅Copy
+      form: {}, // 临时选中对象浅Copy
+      rules: {
+        name: [
+          { required: true, message: '请输入菜单名', trigger: 'blur' }
+          // { validator: checkNameLength, rigger: 'change' }
+        ]
+      }
     }
   },
 
@@ -121,7 +144,13 @@ const Menu = {
     }
 
     const renderFormContent = () => {
-      const { tmp, form } = this
+      const { tmp, form, rules, hasSub } = this
+
+      const options = [
+        { label: '发送消息', value: 'click' },
+        { label: '跳转网页', value: 'view' },
+        { label: '跳转小程序', value: 'miniprogram' }
+      ]
 
       return <div class={style.formBox}>
         <div class={style.formHeader}>
@@ -132,10 +161,19 @@ const Menu = {
         </div>
 
         <div class={style.formBody}>
-          <a-form-model class={style.formModel} vModel={form}>
-            <a-form-model-item label="菜单名称">
-              <a-input vModel_trim={form.name} />
+          { hasSub
+            ? <div class="ant-form-explain">已添加子菜单，仅可设置菜单名称。</div>
+            : '' }
+          <a-form-model vModel={form} rules={rules} {...{ class: style.formModel }}>
+            <a-form-model-item prop="name" ref="name" label="菜单名称" help="仅支持中英文和数字，字数不超过4个汉字或8个字母">
+              <a-input vModel={form.name} />
             </a-form-model-item>
+
+            { !hasSub
+              ? <a-form-model-item prop="type" label="菜单内容">
+                <a-radio-group vModel={form.type} options={options} />
+              </a-form-model-item>
+              : '' }
           </a-form-model>
         </div>
       </div>
